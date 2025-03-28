@@ -12,11 +12,42 @@ def obdelaj_sliko_s_skatlami(slika, sirina_skatle, visina_skatle, barva_koze) ->
     Primer: Če je v sliki 25 škatel, kjer je v vsaki vrstici 5 škatel, naj bo seznam oblike
       [[1,0,0,1,1],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[1,0,0,0,1]]. 
       V tem primeru je v prvi škatli 1 piksel kože, v drugi 0, v tretji 0, v četrti 1 in v peti 1.'''
-    pass
+    
+    # Pridobi dimenzije slike
+    visina_slike, sirina_slike, _ = slika.shape
+
+    # Inicializira prazen seznam za rezultate
+    rezultat = []
+
+    # Z zanko gre skozi sliko v korakih visina_skatle in sirina_skatle
+    for y in range(0, visina_slike, visina_skatle):
+        vrstica = []  # Inicializira vrsto za trenutne škatle 
+        for x in range(0, sirina_slike, sirina_skatle):
+            # Pridobi trenutno škatlo (ROI) z uporabo "Slicing"
+            box = slika[y:y + visina_skatle, x:x + sirina_skatle]
+
+            # Preštej število pikslov z barvo kože v škatli
+            st_pikslov = prestej_piklse_z_barvo_koze(box, barva_koze)
+
+            # Appenda število pikslov v škatli v trenutno vrsto
+            vrstica.append(st_pikslov)
+
+        # Appenda trenutno vrsto v rezultat
+        rezultat.append(vrstica)
+
+    return rezultat
 
 def prestej_piklse_z_barvo_koze(slika, barva_koze) -> int:
-    '''Prestej število pikslov z barvo kože v škatli.'''
-    pass
+    '''Preštej število pikslov z barvo kože v škatli.'''
+    spodnja_meja, zgornja_meja = barva_koze 
+
+    # Ustvari masko, ki vsebuje vse piksle, ki so znotraj barve kože in jih označi z belo barvo (255) vse ostale pa z črno (0)
+    mask = cv.inRange(slika, spodnja_meja, zgornja_meja)
+
+    # Preštej število belih pikslov
+    st_pikslov = cv.countNonZero(mask)
+
+    return st_pikslov
 
 def doloci_barvo_koze(slika, levo_zgoraj, desno_spodaj) -> tuple:
     '''Ta funkcija se kliče zgolj 1x na prvi sliki iz kamere. 

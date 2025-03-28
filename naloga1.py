@@ -72,6 +72,27 @@ def doloci_barvo_koze(slika, levo_zgoraj, desno_spodaj) -> tuple:
 
     return spodnja_meja, zgornja_meja
 
+def narisi_pravokotnik(event, x, y, flags, param):
+    '''Funkcija za risanje pravokotnika z miško.'''
+    global levo_zgoraj, desno_spodaj, risanje, prva_slika
+
+    if event == cv.EVENT_LBUTTONDOWN:  # Začetek risanja
+        risanje = True
+        levo_zgoraj = (x, y)
+
+    elif event == cv.EVENT_MOUSEMOVE and risanje:  # Dinamično risanje pravokotnika
+        desno_spodaj = (x, y)
+        slika_kopija = prva_slika.copy()
+        cv.rectangle(slika_kopija, levo_zgoraj, desno_spodaj, (0, 255, 0), 2)
+        cv.imshow('Prva slika', slika_kopija)
+
+    elif event == cv.EVENT_LBUTTONUP:  # Konec risanja
+        risanje = False
+        desno_spodaj = (x, y)
+        slika_kopija = prva_slika.copy()
+        cv.rectangle(slika_kopija, levo_zgoraj, desno_spodaj, (0, 255, 0), 2)
+        cv.imshow('Prva slika', slika_kopija)
+
 if __name__ == '__main__':
     #Pripravi kamero
 

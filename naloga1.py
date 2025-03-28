@@ -25,13 +25,48 @@ def doloci_barvo_koze(slika,levo_zgoraj,desno_spodaj) -> tuple:
     pass
 
 if __name__ == '__main__':
-    #Pripravi kamero
+    # Pripravi kamero
+    kamera = cv.VideoCapture(0)
 
-    #Zajami prvo sliko iz kamere
+    if not kamera.isOpened():
+        print('Kamera ni bila uspešno odprta.')
+        exit()
 
-    #Izračunamo barvo kože na prvi sliki
+    # Zajami prvo sliko iz kamere
+    ret, prva_slika = kamera.read()
 
-    #Zajemaj slike iz kamere in jih obdeluj     
+    if not ret:
+        print("Napaka: Neuspešno zajemanje slike iz kamere.")
+        kamera.release()
+        exit()
+    
+    # Prikaže zajeto sliko
+    cv.imshow('Prva slika', prva_slika)
+
+    
+    levo_zgoraj = None
+    desno_spodaj = None
+    risanje = False
+
+    # Nastavi MouseCallback za okno
+    cv.setMouseCallback('Prva slika', narisi_pravokotnik)
+
+    # Počakaj na izris in pritisk tipke Enter
+    while True:
+        key = cv.waitKey(1) & 0xFF
+        if key == 13: 
+            break
+
+    cv.destroyAllWindows()
+
+    # Preveri, če je pravokotnik bil narisan
+    if levo_zgoraj is None or desno_spodaj is None:
+        print("Napaka: Pravokotnik ni bil narisan.")
+        kamera.release()
+        exit()
+
+    # Izračunamo barvo kože na prvi sliki
+    barva_koze = doloci_barvo_koze(prva_slika, levo_zgoraj, desno_spodaj)    
     
     #Označi območja (škatle), kjer se nahaja obraz (kako je prepuščeno vaši domišljiji)
         #Vprašanje 1: Kako iz števila pikslov iz vsake škatle določiti celotno območje obraza (Floodfill)?
